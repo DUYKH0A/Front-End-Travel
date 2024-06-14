@@ -1,0 +1,36 @@
+.profile {
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+  
+  .profile__info, .booking__history {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .profile__info h3, .booking__history h3 {
+    margin-bottom: 20px;
+  }
+  
+  .profile__info p, .booking__history p {
+    margin: 10px 0;
+  }
+  
+  .qr-code {
+    display: block;
+    width: 100px;
+    height: 100px;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+  }
+  
+  .points {
+    margin-top: 20px;
+  }
+  
+  .points p {
+    margin: 5px 0;
+  }
+  

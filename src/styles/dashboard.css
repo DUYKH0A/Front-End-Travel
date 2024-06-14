@@ -1,0 +1,39 @@
+.sidebar {
+    background-color: #f8f9fa;
+    height: 100vh;
+    padding-top: 20px;
+  }
+  
+  .sidebar__content {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    padding: 10px;
+  }
+  
+  .sidebar__button {
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: transparent;
+    border: none;
+    color: black;
+    text-align: left;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .sidebar__button:hover {
+    background-color: #e0e0e0; /* Nền xám nhạt khi di chuột vào */
+  }
+  
+  .sidebar__button.active {
+    background-color: #dcdcdc; /* Nền xám cho nút đang hoạt động */
+    color: white;
+  }
+  
+  .content {
+    padding: 20px;
+  }
+  
