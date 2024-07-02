@@ -9,7 +9,7 @@ const Layout = () => {
   const { user } = useContext(AuthContext);
   const location = useLocation(); // Sử dụng useLocation hook để lấy thông tin về địa chỉ URL hiện tại
   // Danh sách các path mà bạn không muốn hiển thị Header và Footer
-  const noHeaderFooterPaths = ['/booking','/usermanager','/tourmanager'];
+  const noHeaderFooterPaths = ['/booking','/usermanager','/tourmanager','/profilemanager','/completed'];
   // Kiểm tra xem trang hiện tại có trong danh sách không
   const shouldShowHeaderFooter = !noHeaderFooterPaths.some(path => location.pathname.includes(path));
   return (

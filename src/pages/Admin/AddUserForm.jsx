@@ -54,7 +54,7 @@ export default function AddUserForm({ closeEvent, updateUserList }) {
     <>
       <Box sx={{ m: 2 }} />
       <Typography variant="h5" align="center">
-        Add User
+        Tạo tài khoản mới
       </Typography>
       <IconButton
         style={{ position: "absolute", top: "0", right: "0" }}
@@ -68,7 +68,7 @@ export default function AddUserForm({ closeEvent, updateUserList }) {
           <TextField
             id="username"
             name="username"
-            label="UserName"
+            label="Họ và tên"
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}

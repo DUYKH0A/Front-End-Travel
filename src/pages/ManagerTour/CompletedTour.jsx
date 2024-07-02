@@ -12,7 +12,7 @@ import { AuthContext } from "../../context/AuthContext";
 import Stack from "@mui/material/Stack";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from '@mui/icons-material/Add';
+import AddIcon from "@mui/icons-material/Add";
 import Autocomplete from "@mui/material/Autocomplete";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TextField from "@mui/material/TextField";
@@ -31,8 +31,8 @@ import AddTourForm from "./Tour/AddTourForm";
 import EditTourForm from "./Tour/EditTourForm";
 import AddDepartureDate from "./Tour/AddDepartureDate";
 
-import moment from 'moment';
-import 'moment/locale/vi'; // Import Vietnamese locale
+import moment from "moment";
+import "moment/locale/vi"; // Import Vietnamese locale
 
 const style = {
   position: "absolute",
@@ -47,7 +47,8 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function Tour() {
+
+export default function CompletedTour() {
   const { user } = useContext(AuthContext);
   const [tours, setTours] = useState([]); // Sử dụng mảng rỗng làm giá trị khởi tạo
   const [open, setOpen] = useState(false);
@@ -59,14 +60,14 @@ export default function Tour() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleEditOpen = (tourId) => {
-    console.log("tourid",tourId);
+    console.log("tourid", tourId);
     setSelectedTour(tourId);
     setEditOpen(true);
   };
   const handleEditClose = () => setEditOpen(false);
-  
+
   const handleAddDepartureOpen = (tourId) => {
-    console.log("tourid",tourId);
+    console.log("tourid", tourId);
     setSelectedTour(tourId);
     setDepartureOpen(true);
   };
@@ -122,7 +123,7 @@ export default function Tour() {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Xoá",
-      cancelButtonText:"Huỷ",
+      cancelButtonText: "Huỷ",
     }).then(async (result) => {
       if (result.value) {
         try {
@@ -133,7 +134,7 @@ export default function Tour() {
             },
             credentials: "include",
           });
-          
+
           if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
           }
@@ -158,36 +159,33 @@ export default function Tour() {
   };
 
   const isAdmin = () => {
-  
     return user && user.role.toLowerCase() === "admin";
   };
   const isManager = () => {
-
-  
-
     return user && user.role.toLowerCase() === "tourmanager";
   };
   const formatDateTime = (dateTime) => {
-    return moment(dateTime).format('HH:mm DD/MM/YYYY');
-  }
+    return moment(dateTime).format("HH:mm DD/MM/YYYY");
+  };
   const isTourValid = (tour) => {
     // Lấy thời gian khởi hành của tour
     const tourDepartureTime = new Date(tour.departureDate);
+    console.log("tourDepartureTime", tourDepartureTime);
     // Tính thời gian cách thời gian hiện tại
     const timeDiff = tourDepartureTime.getTime() - currentTime.getTime();
+    console.log("timeDiff", timeDiff);
     // Chuyển đổi thời gian thành đơn vị ngày
     const daysDiff = timeDiff / (1000 * 3600 * 24) + tour.itinerary.length - 1;
-    console.log(tour.deleted)
-    // Kiểm tra xem tour có cách thời gian hiện tại ít nhất 2 ngày và còn chỗ để đặt tour không
-    return daysDiff >= 0 ;
+
+    return daysDiff <= 0;
   };
-const validTours = tours.filter(isTourValid); // Lọc ra các tour hợp lệ
-const validToursLength = validTours.length; // Độ dài của mảng sau khi lọc
-const sortedTours = tours?.slice().sort((a, b) => {
-  const dateA = new Date(a.departureDate);
-  const dateB = new Date(b.departureDate);
-  return dateA - dateB;
-});
+  const validTours = tours.filter(isTourValid); // Lọc ra các tour hợp lệ
+  const validToursLength = validTours.length; // Độ dài của mảng sau khi lọc
+  const sortedTours = tours?.slice().sort((a, b) => {
+    const dateA = new Date(a.departureDate);
+    const dateB = new Date(b.departureDate);
+    return  dateB - dateA ;
+  });
   return (
     <>
       <Navbar />
@@ -230,7 +228,7 @@ const sortedTours = tours?.slice().sort((a, b) => {
                 <EditTourForm
                   closeEvent={handleEditClose}
                   updateTourList={updateTourList}
-                  tourId={selectedTour}  // truyền dữ liệu của tour vào form
+                  tourId={selectedTour} // truyền dữ liệu của tour vào form
                 />
               </Box>
             </Modal>
@@ -245,7 +243,7 @@ const sortedTours = tours?.slice().sort((a, b) => {
                 <AddDepartureDate
                   closeEvent={handleAddDepartureClose}
                   updateTourList={updateTourList}
-                  tourId={selectedTour}  // truyền dữ liệu của tour vào form
+                  tourId={selectedTour} // truyền dữ liệu của tour vào form
                 />
               </Box>
             </Modal>
@@ -257,7 +255,7 @@ const sortedTours = tours?.slice().sort((a, b) => {
               component="div"
               sx={{ padding: "20px" }}
             >
-              Tour đang thực hiện
+              Tour đã hoàn thành
             </Typography>
             <Divider />
 
@@ -283,7 +281,6 @@ const sortedTours = tours?.slice().sort((a, b) => {
                 variant="contained"
                 endIcon={<AddCircleIcon />}
                 onClick={handleOpen}
-                
               >
                 Add
               </Button>
@@ -327,15 +324,15 @@ const sortedTours = tours?.slice().sort((a, b) => {
                       style={{ minWidth: "100px" }}
                       key="numberofbooking"
                     >
-                      Số vé còn nhận
+                      Số vé đã bán
                     </TableCell>
-                    
+
                     <TableCell
                       align="left"
                       style={{ minWidth: "100px" }}
                       key="actions"
                     >
-                      Chức năng
+                      Trạng thái
                     </TableCell>
                     <TableCell
                       align="left"
@@ -344,11 +341,18 @@ const sortedTours = tours?.slice().sort((a, b) => {
                     >
                       Thêm lịch
                     </TableCell>
+                    {/* <TableCell
+                      align="left"
+                      style={{ minWidth: "100px" }}
+                      key="AddDepartures"
+                    >
+                      Thêm lịch
+                    </TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {sortedTours
-                    .filter(isTourValid)                  
+                    .filter(isTourValid)
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((tour) => {
                       return (
@@ -360,15 +364,28 @@ const sortedTours = tours?.slice().sort((a, b) => {
                             {tour.Placeofdeparture}
                           </TableCell>
                           <TableCell key={tour.id} align="left">
-                          {formatDateTime(tour.departureDate)}
+                            {formatDateTime(tour.departureDate)}
                           </TableCell>
                           <TableCell key={tour.id} align="left">
                             {tour.maxGroupSize}
                           </TableCell>
                           <TableCell key={tour.id} align="left">
-                            {tour.maxGroupSize - tour.numberOfBookings}
+                            {tour.numberOfBookings}
                           </TableCell>
-                          <TableCell align="left">
+                          <TableCell key={tour.id} align="left">
+                            Đã hoàn thành
+                          </TableCell>
+                          <TableCell align="center">
+                            <AddIcon
+                              style={{
+                                fontSize: "20px",
+                                color: "black",
+                                cursor: "pointer",
+                              }}
+                              onClick={() => handleAddDepartureOpen(tour._id)}
+                            />
+                          </TableCell>
+                          {/* <TableCell align="left">
                             <Stack spacing={2} direction="row">
                             <DeleteIcon
                                 style={{
@@ -394,16 +411,15 @@ const sortedTours = tours?.slice().sort((a, b) => {
                                 ""
                               )}
                             </Stack>
-                          </TableCell>
-                          <TableCell align="center"> 
+                          </TableCell> */}
+                          {/* <TableCell align="center"> 
                           <AddIcon style={{
                                   fontSize: "20px",
                                   color: "black",
                                   cursor: "pointer",
                                 }} onClick={() => handleAddDepartureOpen(tour._id)}
  />
-                          </TableCell>
-                          
+                          </TableCell> */}
                         </TableRow>
                       );
                     })}
@@ -419,7 +435,6 @@ const sortedTours = tours?.slice().sort((a, b) => {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-            
           </Paper>
         </Box>
       </Box>

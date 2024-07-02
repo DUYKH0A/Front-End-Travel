@@ -101,13 +101,14 @@ export default function UserManager() {
   };
   const deleteUser = (id) => {
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      title: "Bạn có chắc chắn xoá dữ liệu này không?",
+      text: "Những dữ liệu này sẽ không được phục hồi",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "Xoá",
+      cancelButtonText:"Huỷ",
     }).then(async (result) => {
       if (result.value) {
         try {
@@ -258,7 +259,7 @@ export default function UserManager() {
                                   cursor: "pointer",
                                 }}
                                 className="cursor-pointer"
-                                onClick={() => handleEditOpen(user._id)}
+                                // onClick={() => handleEditOpen(user._id)}
                               />
                               <DeleteIcon
                                 style={{

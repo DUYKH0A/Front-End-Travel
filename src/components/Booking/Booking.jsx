@@ -47,7 +47,7 @@ if (Number(booking.guestSize) + numberOfBookings > maxGroupSize) {
     console.log(booking);
     try {
       if(!user || user=== undefined || user===null){
-        return alert('please sign in')
+        return alert('Vui lòng đăng nhập')
       }
       const res = await fetch(`${BASE_URL}/booking/create-payment-link`,{
         method:'post',
@@ -72,17 +72,22 @@ if (Number(booking.guestSize) + numberOfBookings > maxGroupSize) {
       alert(error.message)
     }
 };
-
+const formatNumber = (num) => {
+  if (num === undefined || num === null) {
+    return "0";
+  }
+  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
   return (
     <div className="booking">
       <div className="booking__top d-flex align-items-center justify-content-between">
         <h3>
-          ${price} <span> ₫/Người</span>
+        {formatNumber(price)} ₫/Người<span></span>
         </h3>
-        <span className="tour__rating d-flex align-items-center">
+        {/* <span className="tour__rating d-flex align-items-center">
           <i className="ri-star-fill"></i>
           {avgRating === 0 ? null : avgRating} ({reviews?.length})
-        </span>
+        </span> */}
       </div>
 
       {/* bookingform */}
@@ -100,10 +105,12 @@ if (Number(booking.guestSize) + numberOfBookings > maxGroupSize) {
           </FormGroup>
           <FormGroup>
             <input
-              type="number"
+              type="tel"
               placeholder="Số điện thoại"
               id="phone"
               required
+              maxLength={10}
+
               onChange={handleChange}
             />
           </FormGroup>
@@ -132,9 +139,9 @@ if (Number(booking.guestSize) + numberOfBookings > maxGroupSize) {
         <ListGroup>
           <ListGroupItem className="border-0 px-0">
             <h5 className="d-flex align-items-center gap-1">
-            {price} ₫ <i className="ri-close-line"></i> 1 người
+            {formatNumber(price)} ₫ <i className="ri-close-line"></i> 1 người
             </h5>
-            <span>{price} ₫</span>
+            <span>{formatNumber(price)} ₫</span>
           </ListGroupItem>
           {/* <ListGroupItem className="border-0 px-0">
             <h5>Service charge</h5>
@@ -142,7 +149,7 @@ if (Number(booking.guestSize) + numberOfBookings > maxGroupSize) {
           </ListGroupItem> */}
           <ListGroupItem className="border-0 px-0">
             <h5>Tổng</h5>
-            <span>{totalAmout}  ₫</span>
+            <span>{formatNumber(totalAmout)}  ₫</span>
           </ListGroupItem>
         </ListGroup>
         <Button className="btn primary__btn w-100 mt-4" onClick={handleClick}>

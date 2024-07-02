@@ -21,17 +21,17 @@ const quick__link = [
 ];
 const quick__links2 = [
   {
-    path: "/gallery",
-    display: "Gallery",
+    path: "/home",
+    display: "Trang chủ",
   },
   {
-    path: "/login",
-    display: "Login",
+    path: "/tours/",
+    display: "Chuyến đi",
   },
-  {
-    path: "/register",
-    display: "Register",
-  },
+  // {
+  //   path: "/home",
+  //   display: "Home",
+  // },
 ];
 
 const Footer = () => {
@@ -64,7 +64,7 @@ const Footer = () => {
               </div>
             </div>
           </Col>
-          <Col lg="3">
+          {/* <Col lg="3">
             <h5 className="footer__link-title">Discover</h5>
             <ListGroup className="footer__quick-links">
               {quick__links2.map((item, index) => (
@@ -73,9 +73,9 @@ const Footer = () => {
                 </ListGroupItem>
               ))}
             </ListGroup>
-          </Col>
+          </Col> */}
           <Col lg="3">
-            <h5 className="footer__link-title">Quick Link</h5>
+            <h5 className="footer__link-title">Truy cập nhanh</h5>
             <ListGroup className="footer__quick-links">
               {quick__links2.map((item, index) => (
                 <ListGroupItem key={index} className="ps-0 border-0">
@@ -85,12 +85,12 @@ const Footer = () => {
             </ListGroup>
           </Col>
           <Col lg="3">
-            <h5 className="footer__link-title">Contact</h5>
+            <h5 className="footer__link-title">Liên hệ</h5>
             <ListGroup className="footer__quick-links">
               <ListGroupItem className="ps-0 border-0 d-flex align-items-center gap-3">
                 <h6 className="mb-0 d-flex align-items-center gap-2">
                   <span><i className="ri-map-pin-line"></i></span>
-                  Address:
+                  Địa chỉ:
                 </h6>
                 <p className="mb-0">Lien Chieu, Da Nang, Viet Nam</p>
               </ListGroupItem>
@@ -99,12 +99,12 @@ const Footer = () => {
                   <span><i className="ri-mail-line"></i></span>
                   Email:
                 </h6>
-                <p className="mb-0">duykhoa@gmail.com</p>
+                <p className="mb-0">Traveltest@gmail.com</p>
               </ListGroupItem>
               <ListGroupItem className="ps-0 border-0 d-flex align-items-center gap-3">
                 <h6 className="mb-0 d-flex align-items-center gap-2">
                   <span><i className="ri-phone-line"></i></span>
-                  Phone:
+                  Hotlien:
                 </h6>
                 <p className="mb-0">+84123456789</p>
               </ListGroupItem>

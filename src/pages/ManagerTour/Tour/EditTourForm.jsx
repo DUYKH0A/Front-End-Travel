@@ -6,12 +6,17 @@ import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { Button } from "reactstrap";
-import { BASE_URL } from "../../../utils/config";
+import { BASE_URL, REACT_APP_UPLOAD_ASSETS_NAME } from "../../../utils/config";
 import moment from "moment-timezone";
+import Loading from "../../../components/Loading";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { apiUploadImages } from "../../../context/uploadAPI";
 
 export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
   console.log(tourId)
     const {user} = useContext(AuthContext)
+    const [isLoading, setIsLoading] = useState(false);
+
     const [formData, setFormData] = useState({
         userId: user && user._id,
         tieude: '',
@@ -19,7 +24,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
         hotel: '',
         departureDate: '',
         Placeofdeparture: '',
-        photo: '',
+        photo: [],
         price: '',
         maxGroupSize: '',
         numberOfBookings: '',
@@ -41,7 +46,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
               throw new Error("Network response was not ok");
             }
             const data = await response.json();
-            console.log(data)
+            console.log("dulieu",data)
             
             setFormData(data.data);
 
@@ -52,6 +57,45 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
     
         fetchTourData();
       }, [tourId]);
+
+      let handleFile = async (e) => {
+        setIsLoading(true);
+        console.log("jdahahj", e.target.files);
+        setIsLoading(true);
+        e.stopPropagation();
+        let files = e.target.files;
+        //console.log("file",files)
+        // const imagerisize = await resizeFile(files);
+        // console.log("imagesresize",imagerisize)
+        let images = [];
+        let formData = new FormData();
+        for (let i of files) {
+          formData.append("file", i);
+          formData.append("upload_preset", REACT_APP_UPLOAD_ASSETS_NAME);
+          let response = await apiUploadImages(formData);
+          if (response.status === 200) {
+            images = [...images, response.data?.secure_url];
+          }
+        }
+        setIsLoading(false);
+        // setPreview((prev) => [...prev, ...images]);
+        setFormData((prev) => ({ ...prev, photo: [...prev.photo, ...images] }));
+        console.log("image upload", images);
+        console.log("setform", );
+        setIsLoading(false);
+      };
+      
+      let handleDeleteImage = (image) => {
+        console.log(image);
+        console.log(formData);
+
+        //setPreview((prev) => prev?.filter((item) => item !== image));
+        setFormData((prev) => ({
+          ...prev,
+          photo: prev?.photo?.filter((item) => item !== image),
+        }));
+        console.log(formData);
+      };
 
     const handleChange = (e) => { 
       console.log("aa")
@@ -129,7 +173,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
     
       <Box sx={{ m: 2 }} />
       <Typography variant="h5" align="center">
-        Edit Tour
+        Cập nhật tour du lịch
       </Typography>
       <IconButton
         style={{ position: "absolute", top: "0", right: "0" }}
@@ -149,6 +193,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
             sx={{ minWidth: "100%" }}
             value={formData.tieude}
             onChange={handleChange}
+            multiline
           />
         </Grid>
         <Grid item xs={12}>
@@ -167,7 +212,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
           <TextField
             id="hotel"
             name="hotel"
-            label="Khách sạn"
+            label="Khách sạn" 
             type="number"
             variant="outlined"
             size="small"
@@ -205,6 +250,57 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
           />
         </Grid>
         <Grid item xs={12}>
+          <Typography variant="h6">Ảnh </Typography>
+          <div className="w-full">
+            <label>{isLoading === true ? <Loading /> : ""}</label>
+            {isLoading === false ? (
+              <input
+                id="photo"
+                name="photo"
+                label="Ảnh"
+                variant="outlined"
+                size="small"
+                type="file"
+                multiple
+                accept="image/*"
+                sx={{ minWidth: "100%" }}
+                onChange={handleFile}
+              />
+            ) : (
+              ""
+            )}
+          </div>
+          <div className="w-full">
+            <h5 className="font-medium py-4 ">Ảnh đã chọn</h5>
+            <div className="images">
+              {formData.photo &&
+                formData.photo.length > 0 &&
+                formData.photo?.map((item, index) => {
+                  return (
+                    <div key={index} className="image">
+                      <img
+                        src={item}
+                        className=" object-cover rounded-md"
+                        alt="preview"
+                      />
+                      <DeleteIcon
+                                style={{
+                                  fontSize: "20px",
+                                  color: "darkred",
+                                  cursor: "pointer",
+                                }}
+                                onClick={() => {
+                                  handleDeleteImage(item);
+                                }}
+                              />
+                      
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+        </Grid>
+        {/* <Grid item xs={12}>
           <TextField
             id="photo"
             name="photo"
@@ -215,7 +311,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
             value={formData.photo}
             onChange={handleChange}
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={12}>
           <TextField
             id="price"
@@ -250,6 +346,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
             sx={{ minWidth: "100%" }}
             value={formData.numberOfBookings}
             onChange={handleChange}
+            disabled 
           />
         </Grid>
         <Grid item xs={12}>
@@ -262,6 +359,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
             sx={{ minWidth: "100%" }}
             value={formData.desc}
             onChange={handleChange}
+            multiline 
           />
         </Grid>
         <Grid item xs={12}>
@@ -281,6 +379,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
                     size="small"
                     sx={{ minWidth: "100%", mb: 1 }}
                     onChange={(e) => handleItineraryChange(e, index, activityIndex)}
+                    multiline
                     value={activity.activity}
                   />
                   <TextField
@@ -291,6 +390,7 @@ export default function EditTourForm({ closeEvent, updateTourList, tourId }) {
                     size="small"
                     sx={{ minWidth: "100%" }}
                     onChange={(e) => handleItineraryChange(e, index, activityIndex)}
+                    multiline
                     value={activity.description}
                   />
                 </Box>

@@ -17,6 +17,7 @@ import Booking from '../pages/ManagerTour/booking'
 import ProfileManager from '../pages/ProfileManager'
 import TourHistory from '../pages/TourHistory'
 import Cancel from '../pages/Cancel'
+import CompletedTour from '../pages/ManagerTour/CompletedTour'
 const Routers = () => {
   return (
     <Routes>
@@ -30,6 +31,7 @@ const Routers = () => {
         <Route path='/admin' element={<Admin/>}/>
         <Route path='/usermanager' element={<UserManager/>}/>
         <Route path='/tourmanager' element={<Tour/>}/>
+        <Route path='/completed' element={<CompletedTour/>}/>
         <Route path='/booking' element={<Booking/>}/>
         <Route path='/tours/:id' element={<TourDetails/>}/>
         <Route path='/history/:id' element={<TourHistory/>}/>

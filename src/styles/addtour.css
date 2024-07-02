@@ -1,0 +1,22 @@
+.images {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.image{
+    width: calc(50% - 16px); 
+    margin-top: 0; /* margin chỉ cho phần tử từ phía trên */
+    margin-bottom: 0; /* không có margin từ phía dưới */
+    margin-left: 0.5rem; /* margin từ phía trái */
+    margin-right: 0.5rem; /* margin từ phía phải */    
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px 0px;
+}
+.image img {
+    display: block; /* Đảm bảo ảnh là một phần tử block */
+    width: 100%; /* Ảnh sẽ mở rộng và thu hẹp theo kích thước của .image */
+    height: 100%; /* Chiều cao tự động */
+    border-radius: 8px; /* Bo góc cho ảnh */
+}

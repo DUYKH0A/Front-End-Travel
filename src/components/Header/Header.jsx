@@ -27,6 +27,7 @@ const Header = () => {
   console.log(user);
   const logout = () => {
     dispatch({ type: "LOGOUT" });
+    localStorage.removeItem("user");
     navigate("/");
   };
   const profile = () => {
@@ -82,16 +83,16 @@ const Header = () => {
                   <>
                     <h5 className="mb-0"onClick={profile}>{user.username}</h5>
                     <button className="btn btn-dark" onClick={logout}>
-                      LOGOUT
+                      Đăng xuất
                     </button>
                   </>
                 ) : (
                   <>
                     <Button className="btn secondary__btn">
-                      <Link to="/login">Login</Link>
+                      <Link to="/login">Đăng nhập</Link>
                     </Button>
                     <Button className="btn primary__btn">
-                      <Link to="/register">Register</Link>
+                      <Link to="/register">Đăng ký</Link>
                     </Button>
                   </>
                 )}

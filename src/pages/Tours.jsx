@@ -31,23 +31,31 @@ const Tours = () => {
   const isTourValid = (tour) => {
     // Lấy thời gian khởi hành của tour
     const tourDepartureTime = new Date(tour.departureDate);
+    console.log("tourDepartureTime",tourDepartureTime)
     // Tính thời gian cách thời gian hiện tại
     const timeDiff = tourDepartureTime.getTime() - currentTime.getTime();
+    console.log("timeDiff",timeDiff)
     // Chuyển đổi thời gian thành đơn vị ngày
     const daysDiff = timeDiff / (1000 * 3600 * 24);
+    console.log("daysDiff",daysDiff)
     // Kiểm tra xem tour có cách thời gian hiện tại ít nhất 2 ngày và còn chỗ để đặt tour không
     return daysDiff >= 2 && tour.maxGroupSize - tour.numberOfBookings > 0;
   };
-
+  // Sắp xếp danh sách tour theo thời gian khởi hành
+  const sortedTours = tours?.slice().sort((a, b) => {
+    const dateA = new Date(a.departureDate);
+    const dateB = new Date(b.departureDate);
+    return dateA - dateB;
+  });
   return (
     <>
       <CommonSection title={"All Tours"} />
       <section>
         <Container>
           <Row>
-            <Col>
+            {/* <Col>
               <SearchBar />
-            </Col>
+            </Col> */}
           </Row>
         </Container>
       </section>
@@ -60,7 +68,7 @@ const Tours = () => {
 
           {!loading && !error && (
             <Row>
-              {tours?.filter(isTourValid).map((tour) => (
+              {sortedTours?.filter(isTourValid).map((tour) => (
                 <Col lg="3" key={tour._id} className="mb-4">
                   <TourCard tour={tour} />
                 </Col>

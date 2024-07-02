@@ -94,6 +94,7 @@ export default function Navbar() {
   const { user, dispatch } = useContext(AuthContext);
   const logout = () => {
     dispatch({ type: "LOGOUT" });
+    localStorage.removeItem("user");
     navigate("/");
   };
   const profile = () => {
@@ -173,7 +174,9 @@ export default function Navbar() {
       </MenuItem>
     </Menu>
   );
-
+  const isAdmin = () => {
+    return user && user.role.toLowerCase() === "admin";
+  };
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" elevation={0} sx={{background: "#ffffff", color:"#2f2f2f"}}>
@@ -230,6 +233,9 @@ export default function Navbar() {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
+              {user.role === 'admin' && 'Admin '}
+              {user.role === 'tourManager' && 'Quản lý '}
+
               <AccountCircle />
             </IconButton>
           </Box>

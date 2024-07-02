@@ -8,17 +8,14 @@ import TextField from "@mui/material/TextField";
 import { Button } from "reactstrap";
 import { BASE_URL, REACT_APP_UPLOAD_ASSETS_NAME } from "../../../utils/config";
 import moment from "moment-timezone";
-import { apiUploadImages } from "../../../context/uploadAPI";
-import resizer from "react-image-file-resizer";
 import Loading from "../../../components/Loading";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { apiUploadImages } from "../../../context/uploadAPI";
 
-import "../../../styles/addtour.css";
-
-export default function AddTourForm({ closeEvent, updateTourList }) {
+export default function AddDepartureDate({ closeEvent, updateTourList, tourId }) {
+  console.log(tourId);
   const { user } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
-  const [preview, setPreview] = useState([]);
 
   const [formData, setFormData] = useState({
     userId: user && user._id,
@@ -30,27 +27,37 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
     photo: [],
     price: "",
     maxGroupSize: "",
+    numberOfBookings: "",
     desc: "",
-    itinerary: [{ day: 1, activities: [{ activity: "", description: "" }] }],
+    itinerary: [],
   });
 
-  // Xử lý khi người dùng chọn ảnh
-  // const handlePhotoSelect = (event) => {};
-  const resizeFile = (file) =>
-    new Promise((resolve) => {
-      resizer.imageFileResizer(
-        file,
-        1000,
-        666,
-        "JPEG",
-        100,
-        0,
-        (uri) => {
-          resolve(uri);
-        },
-        "base64"
-      );
-    });
+  useEffect(() => {
+    const fetchTourData = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/tours/${tourId}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log("dulieu", data);
+        const { _id, ...tourData } = data.data;
+        console.log("dulieu da xu ly", tourData);
+
+        setFormData(tourData);
+      } catch (error) {
+        console.error("Failed to fetch tour data", error);
+      }
+    };
+
+    fetchTourData();
+  }, [tourId]);
 
   let handleFile = async (e) => {
     setIsLoading(true);
@@ -61,7 +68,6 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
     //console.log("file",files)
     // const imagerisize = await resizeFile(files);
     // console.log("imagesresize",imagerisize)
-
     let images = [];
     let formData = new FormData();
     for (let i of files) {
@@ -73,41 +79,45 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
       }
     }
     setIsLoading(false);
-    setPreview((prev) => [...prev, ...images]);
+    // setPreview((prev) => [...prev, ...images]);
     setFormData((prev) => ({ ...prev, photo: [...prev.photo, ...images] }));
     console.log("image upload", images);
-    console.log("setform", setFormData);
+    console.log("setform");
     setIsLoading(false);
   };
 
   let handleDeleteImage = (image) => {
     console.log(image);
-    setPreview((prev) => prev?.filter((item) => item !== image));
+    console.log(formData);
+
+    //setPreview((prev) => prev?.filter((item) => item !== image));
     setFormData((prev) => ({
       ...prev,
       photo: prev?.photo?.filter((item) => item !== image),
     }));
     console.log(formData);
   };
-  console.log(formData);
+
   const handleChange = (e) => {
+    console.log("aa");
+
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleItineraryChange = (e, index, activityIndex) => {
     const newItinerary = [...formData.itinerary];
-
     if (e.target.name.startsWith("day")) {
       newItinerary[index].day = e.target.value;
     } else {
       newItinerary[index].activities[activityIndex][e.target.name] =
         e.target.value;
-      console.log(e.target.value);
     }
     setFormData({ ...formData, itinerary: newItinerary });
   };
 
   const addDay = () => {
+    console.log("aa");
+
     setFormData({
       ...formData,
       itinerary: [
@@ -121,25 +131,29 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
   };
 
   const addActivity = (index) => {
+    console.log("aa");
+
     const newItinerary = [...formData.itinerary];
     newItinerary[index].activities.push({ activity: "", description: "" });
     setFormData({ ...formData, itinerary: newItinerary });
   };
 
   const handleSubmit = async () => {
+    console.log("aa");
+    const { numberOfBookings, ...filteredFormData } = formData;
+
     const formattedData = {
-      ...formData,
+      ...filteredFormData,
       departureDate: moment
         .tz(formData.departureDate, "Asia/Ho_Chi_Minh")
         .utc()
         .format(),
     };
-
-    console.log("du lieu da xu ly",formattedData);
+    console.log("data đã xử lý",formattedData);
     try {
-      console.log(formattedData);
+      console.log("data chưa xử lý",formData);
 
-      const response = await fetch(`${BASE_URL}/tours`, {
+      const response = await fetch(`${BASE_URL}/tours/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -168,7 +182,7 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
     <>
       <Box sx={{ m: 2 }} />
       <Typography variant="h5" align="center">
-        Thêm tour du lịch
+        Thêm lịch
       </Typography>
       <IconButton
         style={{ position: "absolute", top: "0", right: "0" }}
@@ -186,7 +200,11 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.tieude}
             onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
             multiline
           />
         </Grid>
@@ -198,7 +216,11 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.transport}
             onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -210,7 +232,11 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.hotel}
             onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -221,7 +247,11 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.Placeofdeparture}
             onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -236,12 +266,13 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             InputLabelProps={{
               shrink: true,
             }}
+            value={moment(formData.departureDate).format("YYYY-MM-DDTHH:mm")}
             onChange={handleChange}
           />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Ảnh </Typography>
-          <div className="w-full">
+          {/* <div className="w-full">
             <label>{isLoading === true ? <Loading /> : ""}</label>
             {isLoading === false ? (
               <input
@@ -259,13 +290,13 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             ) : (
               ""
             )}
-          </div>
+          </div> */}
           <div className="w-full">
-            <h3 className="font-medium py-4 ">Ảnh đã chọn</h3>
+            <h5 className="font-medium py-4 " >Ảnh đã chọn</h5>
             <div className="images">
-              {preview &&
-                preview.length > 0 &&
-                preview?.map((item, index) => {
+              {formData.photo &&
+                formData.photo.length > 0 &&
+                formData.photo?.map((item, index) => {
                   return (
                     <div key={index} className="image">
                       <img
@@ -273,22 +304,34 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
                         className=" object-cover rounded-md"
                         alt="preview"
                       />
-                      <DeleteIcon
-                                style={{
-                                  fontSize: "20px",
-                                  color: "darkred",
-                                  cursor: "pointer",
-                                }}
-                                onClick={() => {
-                                  handleDeleteImage(item);
-                                }}
-                              />
+                      {/* <DeleteIcon
+                        style={{
+                          fontSize: "20px",
+                          color: "darkred",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          handleDeleteImage(item);
+                        }}
+                      /> */}
                     </div>
                   );
                 })}
             </div>
           </div>
         </Grid>
+        {/* <Grid item xs={12}>
+          <TextField
+            id="photo"
+            name="photo"
+            label="Ảnh"
+            variant="outlined"
+            size="small"
+            sx={{ minWidth: "100%" }}
+            value={formData.photo}
+            onChange={handleChange}
+          />
+        </Grid> */}
         <Grid item xs={12}>
           <TextField
             id="price"
@@ -297,7 +340,11 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.price}
             onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -308,9 +355,28 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.maxGroupSize}
             onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
           />
         </Grid>
+        {/* <Grid item xs={12}>
+          <TextField
+            id="numberOfBookings"
+            name="numberOfBookings"
+            label="Số người đã đặt"
+            variant="outlined"
+            size="small"
+            sx={{ minWidth: "100%" }}
+            value={formData.numberOfBookings}
+            onChange={handleChange}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </Grid> */}
         <Grid item xs={12}>
           <TextField
             id="desc"
@@ -319,52 +385,63 @@ export default function AddTourForm({ closeEvent, updateTourList }) {
             variant="outlined"
             size="small"
             sx={{ minWidth: "100%" }}
+            value={formData.desc}
             onChange={handleChange}
-            multiline 
+            InputProps={{
+              readOnly: true,
+            }}
+            multiline
           />
         </Grid>
         <Grid item xs={12}>
           <Typography variant="h6">Lịch trình</Typography>
-          {formData.itinerary.map((day, index) => (
-            <Box key={index} mb={2}>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Ngày {index + 1}
-              </Typography>
-              {day.activities.map((activity, activityIndex) => (
-                <Box key={activityIndex} mb={1}>
-                  <TextField
-                    id={`activity-${index}-${activityIndex}`}
-                    name="activity"
-                    label="Hoạt động"
-                    variant="outlined"
-                    size="small"
-                    sx={{ minWidth: "100%", mb: 1 }}
-                    onChange={(e) =>
-                      handleItineraryChange(e, index, activityIndex)
-                    }
-                    multiline
-                    value={activity.activity}
-                  />
-                  <TextField
-                    id={`description-${index}-${activityIndex}`}
-                    name="description"
-                    label="Mô tả"
-                    variant="outlined"
-                    size="small"
-                    sx={{ minWidth: "100%" }}
-                    onChange={(e) =>
-                      handleItineraryChange(e, index, activityIndex)
-                    }
-                    multiline
-                    value={activity.description}
-                  />
-                </Box>
-              ))}
-              <Button variant="contained" onClick={() => addActivity(index)}>
-                Thêm Hoạt Động
-              </Button>
-            </Box>
-          ))}
+          {formData.itinerary &&
+            formData.itinerary.map((day, index) => (
+              <Box key={index} mb={2}>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  Ngày {index + 1}
+                </Typography>
+                {day.activities.map((activity, activityIndex) => (
+                  <Box key={activityIndex} mb={1}>
+                    <TextField
+                      id={`activity-${index}-${activityIndex}`}
+                      name="activity"
+                      label="Hoạt động"
+                      variant="outlined"
+                      size="small"
+                      sx={{ minWidth: "100%", mb: 1 }}
+                      onChange={(e) =>
+                        handleItineraryChange(e, index, activityIndex)
+                      }
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      multiline
+                      value={activity.activity}
+                    />
+                    <TextField
+                      id={`description-${index}-${activityIndex}`}
+                      name="description"
+                      label="Mô tả"
+                      variant="outlined"
+                      size="small"
+                      sx={{ minWidth: "100%" }}
+                      onChange={(e) =>
+                        handleItineraryChange(e, index, activityIndex)
+                      }
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      multiline
+                      value={activity.description}
+                    />
+                  </Box>
+                ))}
+                <Button variant="contained" onClick={() => addActivity(index)}>
+                  Thêm Hoạt Động
+                </Button>
+              </Box>
+            ))}
           <Button variant="contained" onClick={addDay}>
             Thêm Ngày
           </Button>

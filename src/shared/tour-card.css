@@ -66,6 +66,12 @@
 }
 
 .tour__title a{
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Số dòng hiển thị */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
     text-decoration: none;
     color: var(--heading-color);
     transition: .3s;

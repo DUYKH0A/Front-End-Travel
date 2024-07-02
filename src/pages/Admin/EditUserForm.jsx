@@ -120,7 +120,7 @@ export default function EditUserForm({ closeEvent, updateTourList, userId }) {
     
       <Box sx={{ m: 2 }} />
       <Typography variant="h5" align="center">
-        Edit User
+        Cập nhập thông tin tài khoản
       </Typography>
       <IconButton
         style={{ position: "absolute", top: "0", right: "0" }}
